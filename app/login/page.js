@@ -1,14 +1,34 @@
 "use client";
-import React from 'react';
-import { useRouter } from 'next/navigation'; // Import useRouter from next/router
-import Image from 'next/image'; // Import Image from next/image
-import googleLogo from '/public/google.png'; // Static import for the Google logo
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import googleLogo from '/public/google.png';
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { auth } from '../firebase/config';
 
 function Loginpage() {
   const router = useRouter();
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
   const handleRegisterNavigation = () => {
-    router.push('/register'); // Correct path to the register page
+    router.push('/register');
+  };
+
+  const handleGoogleSignIn = async () => {
+    if (isSigningIn) return; // Prevent multiple pop-up requests
+    const provider = new GoogleAuthProvider();
+    setIsSigningIn(true);
+    try {
+      await signInWithPopup(auth, provider);
+      alert('User signed in with Google successfully!');
+      // You can redirect the user to another page if needed
+      // router.push('/dashboard');
+    } catch (error) {
+      console.error('Error signing in with Google:', error);
+      alert('Error signing in with Google: ' + error.message);
+    } finally {
+      setIsSigningIn(false);
+    }
   };
 
   return (
@@ -20,9 +40,13 @@ function Loginpage() {
           <input type="password" id="password" name="password" placeholder="Password" required className="p-3 mb-4 border border-gray-300 rounded" />
           <button type="submit" className="p-3 bg-blue-500 text-white rounded hover:bg-blue-700 mb-4 text-lg w-full">Login</button>
         </form>
-        <button className="p-3 bg-blue-400 text-white rounded hover:bg-blue-600 mb-4 flex items-center justify-center w-full">
+        <button
+          onClick={handleGoogleSignIn}
+          className="p-3 bg-blue-400 text-white rounded hover:bg-blue-600 mb-4 flex items-center justify-center w-full"
+          disabled={isSigningIn}
+        >
           <Image src={googleLogo} alt="Google logo" width={24} height={24} className="mr-2" />
-          Login with Google
+          {isSigningIn ? 'Signing in...' : 'Login with Google'}
         </button>
         <div className="text-sm text-gray-600">
           Not registered? <button onClick={handleRegisterNavigation} className="text-blue-500 hover:text-blue-700">Register</button>
