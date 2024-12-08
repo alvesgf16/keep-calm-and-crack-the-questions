@@ -46,7 +46,7 @@ function Loginpage() {
           disabled={isSigningIn}
         >
           <Image src={googleLogo} alt="Google logo" width={24} height={24} className="mr-2" />
-          {isSigningIn ? 'Signing in...' : 'Login with Google'}
+          {isSigningIn ? 'Signing in..' : 'Login with Google'}
         </button>
         <div className="text-sm text-gray-600">
           Not registered? <button onClick={handleRegisterNavigation} className="text-blue-500 hover:text-blue-700">Register</button>
