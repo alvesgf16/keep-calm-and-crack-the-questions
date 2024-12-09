@@ -1,19 +1,35 @@
 'use client';
 
+import Image from 'next/image';
 import { useUserAuth } from '../_contexts/user-context';
+import googleLogo from '../../public/google.png';
 
 // Import the useUserAuth hook
 
 export default function Login() {
-  // Use the useUserAuth hook to get the user object and the login and logout functions
-  const { googleSignIn } = useUserAuth();
+  const { googleSignIn, isSigningIn } = useUserAuth();
 
   return (
-    <button
-      onClick={async () => await googleSignIn()}
-      className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700"
+    <div
+      className="flex items-center justify-center min-h-screen bg-cover bg-center"
     >
-      Play with Google
-    </button>
+      <div className="bg-white p-12 rounded-lg shadow-lg text-center bg-opacity-80 w-full max-w-md">
+        <h1 className="text-3xl font-bold mb-6">Trivia Game</h1>
+        <button
+          onClick={googleSignIn}
+          className="p-3 bg-blue-400 text-white rounded hover:bg-blue-600 mb-4 flex items-center justify-center w-full"
+          disabled={isSigningIn}
+        >
+          <Image
+            src={googleLogo}
+            alt="Google Logo"
+            width={24}
+            height={24}
+            className="mr-2"
+          />
+          {isSigningIn ? 'Signing in...' : 'Play with Google'}
+        </button>
+      </div>
+    </div>
   );
 }
