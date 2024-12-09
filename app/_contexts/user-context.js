@@ -15,7 +15,7 @@ import auth from '../_utils/firebase';
 const UserContext = createContext();
 
 export function UserContextProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({ displayName: '', email: '', photoUrl: '' });
   const [isSigningIn, setIsSigningIn] = useState(false);
 
   const googleSignIn = useCallback(async () => {
