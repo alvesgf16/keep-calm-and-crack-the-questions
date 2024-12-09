@@ -19,7 +19,7 @@ export const UserContextProvider = ({ children }) => {
     if (isSigningIn) {
       return;
     }
-    
+
     const provider = new GoogleAuthProvider();
     setIsSigningIn(true);
     try {
@@ -39,9 +39,9 @@ export const UserContextProvider = ({ children }) => {
       const handleAuth = (response) => {
         const { response_code, token } = response;
 
-        if (!response_code) {
+        if (response_code === 0) {
           const { displayName, email, photoUrl } = currentUser;
-          setUser({ displayName, email, photoUrl, assertions: 0, score: 0 });
+          setUser({ displayName, email, photoUrl });
           localStorage.setItem('token', token);
         }
       };
@@ -56,11 +56,9 @@ export const UserContextProvider = ({ children }) => {
     return () => unsubscribe();
   }, [user]);
 
-  return (
-    <UserContext.Provider value={{ user, googleSignIn, firebaseSignOut }}>
-      {children}
-    </UserContext.Provider>
-  );
+  const value = { user, googleSignIn, firebaseSignOut };
+
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
 
 export const useUserAuth = () => {
