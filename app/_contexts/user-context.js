@@ -13,10 +13,20 @@ const UserContext = createContext();
 
 export const UserContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
   const googleSignIn = () => {
+    if (isSigningIn) return;
     const provider = new GoogleAuthProvider();
-    return signInWithPopup(auth, provider);
+    setIsSigningIn(true);
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      console.error('Error signing in with Google:', error);
+      alert('Error signing in with Google: ' + error.message);
+    } finally {
+      setIsSigningIn(false);
+    }
   };
 
   const firebaseSignOut = () => signOut(auth);
