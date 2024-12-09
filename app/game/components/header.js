@@ -1,6 +1,6 @@
-import { useGame } from '@/app/_contexts/game-context';
-import { useUserAuth } from '@/app/_contexts/user-context';
 import Image from 'next/image';
+import { useGame } from '../../_contexts/game-context';
+import { useUserAuth } from '../../_contexts/user-context';
 
 export default function Header() {
   const { user, firebaseSignOut } = useUserAuth();
@@ -9,14 +9,17 @@ export default function Header() {
   return (
     <header>
       <h1>
-        <Image src={user.photoUrl} alt="User" />
+        {user.photoUrl && <Image src={user.photoUrl} alt="User" />}
         <p className="text-xl text-black font-medium">
-          Welcome, {user.displayName}
+          Welcome,
+          {' '}
+          {user.displayName}
         </p>
       </h1>
-      <h4>{score}</h4>
+      <h4 className="text-black">{score}</h4>
       <button
-        onClick={async () => await firebaseSignOut()}
+        type="button"
+        onClick={async () => firebaseSignOut()}
         className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-700"
       >
         Logout

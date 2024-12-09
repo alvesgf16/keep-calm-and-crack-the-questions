@@ -3,27 +3,29 @@
 import { useGame } from '../_contexts/game-context';
 import Question from './components/question';
 import Timer from './components/timer';
+import Layout from './layout';
 
 export default function Game() {
-  const { questions, currentQuestionIndex, isTimerStopped, handleNextButtonClick } = useGame();
-  const { category, question, incorrect_answers, correct_answer } =
-    questions[currentQuestionIndex];
+  const {
+    questions,
+    currentQuestionIndex,
+    isTimerStopped,
+    handleNextButtonClick,
+  } = useGame();
 
   return (
-    <div className="flex items-center space-x-4">
-      {questions.length > 0 && 
-      (<Question
-        category={category}
-        question={question}
-        incorrectAnswers={incorrect_answers}
-        correctAnswer={correct_answer}
-      />)}
+    <Layout>
+      <Question currentQuestion={questions[currentQuestionIndex]} />
       <Timer />
       {isTimerStopped && (
-        <button className='text-black' type="button" onClick={handleNextButtonClick}>
+        <button
+          className="text-black"
+          type="button"
+          onClick={handleNextButtonClick}
+        >
           Next
         </button>
       )}
-    </div>
+    </Layout>
   );
 }

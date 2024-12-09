@@ -1,21 +1,24 @@
 'use client';
 
-import { useContext, createContext, useState, useEffect } from 'react';
+import {
+  useContext, createContext, useState, useEffect, useMemo,
+  useCallback,
+} from 'react';
 import {
   signInWithPopup,
   signOut,
   onAuthStateChanged,
   GoogleAuthProvider,
 } from 'firebase/auth';
-import { auth } from '../_utils/firebase';
+import auth from '../_utils/firebase';
 
 const UserContext = createContext();
 
-export const UserContextProvider = ({ children }) => {
+export function UserContextProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isSigningIn, setIsSigningIn] = useState(false);
 
-  const googleSignIn = async () => {
+  const googleSignIn = useCallback(async () => {
     if (isSigningIn) {
       return;
     }
@@ -26,20 +29,20 @@ export const UserContextProvider = ({ children }) => {
       await signInWithPopup(auth, provider);
     } catch (error) {
       console.error('Error signing in with Google:', error);
-      alert('Error signing in with Google: ' + error.message);
+      alert(`Error signing in with Google: ${error.message}`);
     } finally {
       setIsSigningIn(false);
     }
-  };
+  }, [isSigningIn]);
 
   const firebaseSignOut = () => signOut(auth);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       const handleAuth = (response) => {
-        const { response_code, token } = response;
+        const { response_code: responseCode, token } = response;
 
-        if (response_code === 0) {
+        if (responseCode === 0) {
           const { displayName, email, photoUrl } = currentUser;
           setUser({ displayName, email, photoUrl });
           localStorage.setItem('token', token);
@@ -56,11 +59,9 @@ export const UserContextProvider = ({ children }) => {
     return () => unsubscribe();
   }, [user]);
 
-  const value = { user, googleSignIn, firebaseSignOut };
+  const value = useMemo(() => ({ user, googleSignIn, firebaseSignOut }), [googleSignIn, user]);
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
-};
+}
 
-export const useUserAuth = () => {
-  return useContext(UserContext);
-};
+export const useUserAuth = () => useContext(UserContext);

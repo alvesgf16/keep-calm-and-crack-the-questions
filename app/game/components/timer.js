@@ -1,7 +1,7 @@
 'use client';
 
-import { useGame } from '@/app/_contexts/game-context';
 import React, { useRef, useEffect } from 'react';
+import { useGame } from '../../_contexts/game-context';
 
 export default function Timer() {
   const Ref = useRef(null);
@@ -30,7 +30,10 @@ export default function Timer() {
 
   return (
     <div className="text-center m-auto">
-      <h2 className='text-black'>Remaining time: {remainingTime}</h2>
+      <h2 className="text-black">
+        Remaining time:
+        {remainingTime}
+      </h2>
     </div>
   );
 }

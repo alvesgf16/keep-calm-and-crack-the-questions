@@ -1,17 +1,27 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import {
+  createContext, useCallback, useContext, useEffect, useMemo, useState,
+} from 'react';
 
 const GameContext = createContext();
 
-export const GameContextProvider = ({ children }) => {
-  const [questions, setQuestions] = useState([]);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(null);
+export function GameContextProvider({ children }) {
+  const [questions, setQuestions] = useState([
+    {
+      category: '',
+      question: '',
+      incorrect_answers: [''],
+      correct_answer: '',
+      difficulty: 'easy',
+    },
+  ]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [remainingTime, setRemainingTime] = useState(30);
   const [isTimerStopped, setIsTimerStopped] = useState(false);
 
-  const difficultyPoints = { easy: 1, medium: 2, hard: 3 };
+  const difficultyPoints = useMemo(() => ({ easy: 1, medium: 2, hard: 3 }), []);
 
   const getQuestions = () => {
     const token = localStorage.getItem('token');
@@ -19,8 +29,8 @@ export const GameContextProvider = ({ children }) => {
     try {
       fetch(url)
         .then((response) => response.json())
-        .then(({ response_code, results }) => {
-          if (response_code === 0) {
+        .then(({ response_code: responseCode, results }) => {
+          if (responseCode === 0) {
             setQuestions(results);
           }
         });
@@ -29,19 +39,15 @@ export const GameContextProvider = ({ children }) => {
     }
   };
 
-  const updateScore = () => {
+  const updateScore = useCallback(() => {
     const BASE_POINTS = 10;
-    const difficulty = difficultyPoints[currentQuestion.difficulty];
-    const points = BASE_POINTS + time * difficulty;
+    const difficulty = difficultyPoints[questions[currentQuestionIndex].difficulty];
+    const points = BASE_POINTS + remainingTime * difficulty;
     setScore((prevScore) => prevScore + points);
-  };
+  }, [currentQuestionIndex, difficultyPoints, questions, remainingTime]);
 
   const handleNextButtonClick = () => {
-    setCurrentQuestionIndex((prevIndex) => {
-      if (prevIndex < 10) {
-        return (prevIndex += 1);
-      }
-    });
+    setCurrentQuestionIndex((prevIndex) => (prevIndex < 10 ? prevIndex + 1 : prevIndex));
     setRemainingTime(30);
     setIsTimerStopped(false);
   };
@@ -51,21 +57,23 @@ export const GameContextProvider = ({ children }) => {
     setCurrentQuestionIndex(0);
   }, []);
 
-  const value = {
-    questions,
-    currentQuestionIndex,
-    score,
-    remainingTime,
-    setRemainingTime,
-    isTimerStopped,
-    setIsTimerStopped,
-    updateScore,
-    handleNextButtonClick,
-  };
+  const value = useMemo(
+    () => (
+      {
+        questions,
+        currentQuestionIndex,
+        score,
+        remainingTime,
+        setRemainingTime,
+        isTimerStopped,
+        setIsTimerStopped,
+        updateScore,
+        handleNextButtonClick,
+      }),
+    [currentQuestionIndex, isTimerStopped, questions, remainingTime, score, updateScore],
+  );
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
-};
+}
 
-export const useGame = () => {
-  return useContext(GameContext);
-};
+export const useGame = () => useContext(GameContext);

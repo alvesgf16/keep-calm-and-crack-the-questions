@@ -1,9 +1,9 @@
 'use client';
 
-import { useGame } from '@/app/_contexts/game-context';
+import { useGame } from '../../_contexts/game-context';
 
 export default function AlternativeButton({ isCorrect, text }) {
-  const { isTimerStopped, setIsTimerStopped } = useGame();
+  const { isTimerStopped, setIsTimerStopped, updateScore } = useGame();
 
   const handleAlternativeClick = () => {
     setIsTimerStopped(true);
@@ -16,8 +16,8 @@ export default function AlternativeButton({ isCorrect, text }) {
     <button
       style={{
         border:
-          isTimerStopped &&
-          (isCorrect
+          isTimerStopped
+          && (isCorrect
             ? '3px solid rgb(6, 240, 15)'
             : '3px solid rgb(255, 0, 0)'),
       }}
