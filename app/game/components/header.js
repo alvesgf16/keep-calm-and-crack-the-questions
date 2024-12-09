@@ -1,3 +1,5 @@
+'use client';
+
 import Image from 'next/image';
 import { useGame } from '../../_contexts/game-context';
 import { useUserAuth } from '../../_contexts/user-context';
