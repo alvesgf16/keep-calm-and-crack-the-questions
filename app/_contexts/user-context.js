@@ -15,8 +15,11 @@ export const UserContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isSigningIn, setIsSigningIn] = useState(false);
 
-  const googleSignIn = () => {
-    if (isSigningIn) return;
+  const googleSignIn = async () => {
+    if (isSigningIn) {
+      return;
+    }
+    
     const provider = new GoogleAuthProvider();
     setIsSigningIn(true);
     try {
@@ -35,7 +38,7 @@ export const UserContextProvider = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       const handleAuth = (response) => {
         const { response_code, token } = response;
-    
+
         if (!response_code) {
           const { displayName, email, photoUrl } = currentUser;
           setUser({ displayName, email, photoUrl, assertions: 0, score: 0 });
@@ -47,7 +50,7 @@ export const UserContextProvider = ({ children }) => {
         fetch('https://opentdb.com/api_token.php?command=request')
           .then((response) => response.json())
           .then(handleAuth);
-      } 
+      }
       setUser(currentUser);
     });
     return () => unsubscribe();
