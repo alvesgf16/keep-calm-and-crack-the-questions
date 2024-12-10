@@ -28,6 +28,9 @@ export function GameContextProvider({ children }) {
     const url = `https://opentdb.com/api.php?amount=10&token=${token}`;
     try {
       const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
       const data = await response.json();
       if (data.response_code === 0) {
         setQuestions(data.results);
