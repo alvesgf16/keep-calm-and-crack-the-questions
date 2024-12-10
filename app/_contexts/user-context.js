@@ -10,12 +10,13 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider,
 } from 'firebase/auth';
+import { redirect } from 'next/navigation';
 import auth from '../_utils/firebase';
 
 const UserContext = createContext();
 
 export function UserContextProvider({ children }) {
-  const [user, setUser] = useState({ displayName: '', email: '', photoUrl: '' });
+  const [user, setUser] = useState(null);
   const [isSigningIn, setIsSigningIn] = useState(false);
 
   const googleSignIn = useCallback(async () => {
@@ -35,29 +36,34 @@ export function UserContextProvider({ children }) {
     }
   }, [isSigningIn]);
 
-  const firebaseSignOut = () => signOut(auth);
+  const firebaseSignOut = async () => {
+    await signOut(auth);
+    redirect('/login');
+  };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      const handleAuth = (response) => {
-        const { response_code: responseCode, token } = response;
-
-        if (responseCode === 0) {
-          const { displayName, email, photoUrl } = currentUser;
-          setUser({ displayName, email, photoUrl });
-          localStorage.setItem('token', token);
-        }
-      };
-
-      if (currentUser) {
-        fetch('https://opentdb.com/api_token.php?command=request')
-          .then((response) => response.json())
-          .then(handleAuth);
-      }
       setUser(currentUser);
     });
+
+    const handleAuth = (response) => {
+      const { response_code: responseCode, token } = response;
+
+      if (responseCode === 0) {
+        const { displayName, photoUrl } = user;
+        setUser({ displayName, photoUrl });
+        localStorage.setItem('token', token);
+      }
+    };
+
+    if (user) {
+      fetch('https://opentdb.com/api_token.php?command=request')
+        .then((response) => response.json())
+        .then(handleAuth);
+    }
+
     return () => unsubscribe();
-  }, [user]);
+  }, []);
 
   const value = useMemo(() => ({ user, googleSignIn, firebaseSignOut }), [googleSignIn, user]);
 
