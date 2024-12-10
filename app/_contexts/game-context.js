@@ -1,8 +1,7 @@
 'use client';
 
 import {
-  useContext, createContext, useState, useEffect, useMemo,
-  useCallback,
+  useContext, createContext, useState, useMemo, useCallback,
 } from 'react';
 
 const GameContext = createContext();
@@ -57,7 +56,7 @@ export function GameContextProvider({ children }) {
       if (data.response_code === 0) {
         setQuestions(data.results.map(formatResult));
       } else {
-        console.error('Failed to fetch questions');
+        console.error(`Failed to fetch questions. Response code was ${data.response_code}.`);
       }
     } catch (e) {
       console.error('Error fetching questions:', e);
@@ -71,11 +70,6 @@ export function GameContextProvider({ children }) {
     setScore((prevScore) => prevScore + points);
   }, [currentQuestionIndex, difficultyPoints, questions, remainingTime]);
 
-  useEffect(() => {
-    getQuestions();
-    setCurrentQuestionIndex(0);
-  }, [getQuestions]);
-
   const value = useMemo(
     () => ({
       questions,
@@ -86,10 +80,12 @@ export function GameContextProvider({ children }) {
       setRemainingTime,
       isTimerStopped,
       setIsTimerStopped,
+      getQuestions,
       updateScore,
     }),
     [
       currentQuestionIndex,
+      getQuestions,
       isTimerStopped,
       questions,
       remainingTime,

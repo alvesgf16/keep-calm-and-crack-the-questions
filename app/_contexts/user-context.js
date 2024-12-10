@@ -27,7 +27,9 @@ export function UserContextProvider({ children }) {
     const provider = new GoogleAuthProvider();
     setIsSigningIn(true);
     try {
-      await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      const { displayName, photoUrl } = result.user;
+      setUser({ displayName, photoUrl });
     } catch (error) {
       console.error('Error signing in with Google:', error);
       alert(`Error signing in with Google: ${error.message}`);
@@ -50,8 +52,6 @@ export function UserContextProvider({ children }) {
       const { response_code: responseCode, token } = response;
 
       if (responseCode === 0) {
-        const { displayName, photoUrl } = user;
-        setUser({ displayName, photoUrl });
         localStorage.setItem('token', token);
       }
     };
@@ -63,7 +63,7 @@ export function UserContextProvider({ children }) {
     }
 
     return () => unsubscribe();
-  }, []);
+  }, [user]);
 
   const value = useMemo(() => ({ user, googleSignIn, firebaseSignOut }), [googleSignIn, user]);
 

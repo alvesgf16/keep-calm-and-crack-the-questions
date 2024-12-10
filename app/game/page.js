@@ -14,8 +14,14 @@ export default function Game() {
     setRemainingTime,
     isTimerStopped,
     setIsTimerStopped,
+    getQuestions,
     handleNextButtonClick,
   } = useGame();
+
+  useEffect(() => {
+    getQuestions();
+    setCurrentQuestionIndex(0);
+  }, [getQuestions, setCurrentQuestionIndex]);
 
   useEffect(() => {
     if (isTimerStopped) {
