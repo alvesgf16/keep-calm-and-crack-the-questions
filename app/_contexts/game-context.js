@@ -1,8 +1,7 @@
 'use client';
 
 import {
-  useContext, createContext, useState, useEffect, useMemo,
-  useCallback,
+  useContext, createContext, useState, useMemo, useCallback,
 } from 'react';
 
 const GameContext = createContext();
@@ -71,11 +70,6 @@ export function GameContextProvider({ children }) {
     setScore((prevScore) => prevScore + points);
   }, [currentQuestionIndex, difficultyPoints, questions, remainingTime]);
 
-  useEffect(() => {
-    getQuestions();
-    setCurrentQuestionIndex(0);
-  }, [getQuestions]);
-
   const value = useMemo(
     () => ({
       questions,
@@ -86,10 +80,12 @@ export function GameContextProvider({ children }) {
       setRemainingTime,
       isTimerStopped,
       setIsTimerStopped,
+      getQuestions,
       updateScore,
     }),
     [
       currentQuestionIndex,
+      getQuestions,
       isTimerStopped,
       questions,
       remainingTime,
