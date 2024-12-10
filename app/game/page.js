@@ -1,12 +1,17 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { redirect } from 'next/navigation';
+import { addDoc, collection } from 'firebase/firestore';
 import { useGame } from '../_contexts/game-context';
 import Question from './components/question';
 import Timer from './components/timer';
+import { useUserAuth } from '../_contexts/user-context';
+import { db } from '../_utils/firebase';
 
 export default function Game() {
+  const { user } = useUserAuth();
+
   const {
     questions,
     currentQuestionIndex,
@@ -14,9 +19,26 @@ export default function Game() {
     setRemainingTime,
     isTimerStopped,
     setIsTimerStopped,
+    score,
     getQuestions,
     handleNextButtonClick,
   } = useGame();
+
+  const addResultToRanking = useCallback(async () => {
+    const { displayName, photoURL } = user;
+
+    try {
+      const docRef = await addDoc(collection(db, 'scores'), {
+        displayName,
+        photoURL,
+        score,
+      });
+
+      console.log('Document written with ID: ', docRef.id);
+    } catch (e) {
+      console.error('Error adding document: ', e);
+    }
+  }, [score, user]);
 
   useEffect(() => {
     getQuestions();
@@ -33,7 +55,7 @@ export default function Game() {
           setRemainingTime(30);
           setIsTimerStopped(false);
         } else {
-          redirect('/ranking');
+          addResultToRanking().then(() => redirect('/ranking'));
         }
       }, 5000); // Stay for 5 seconds before moving to the next question
       return () => clearTimeout(timer);
@@ -41,6 +63,7 @@ export default function Game() {
 
     return undefined;
   }, [
+    addResultToRanking,
     currentQuestionIndex,
     isTimerStopped,
     questions.length,

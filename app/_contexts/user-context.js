@@ -11,7 +11,7 @@ import {
   GoogleAuthProvider,
 } from 'firebase/auth';
 import { redirect } from 'next/navigation';
-import auth from '../_utils/firebase';
+import { auth } from '../_utils/firebase';
 
 const UserContext = createContext();
 
@@ -27,9 +27,7 @@ export function UserContextProvider({ children }) {
     const provider = new GoogleAuthProvider();
     setIsSigningIn(true);
     try {
-      const result = await signInWithPopup(auth, provider);
-      const { displayName, photoUrl } = result.user;
-      setUser({ displayName, photoUrl });
+      await signInWithPopup(auth, provider);
     } catch (error) {
       console.error('Error signing in with Google:', error);
       alert(`Error signing in with Google: ${error.message}`);

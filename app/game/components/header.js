@@ -20,9 +20,7 @@ export default function Header() {
       <div className="flex items-center space-x-4">
         {user && (
           <>
-            {user.photoUrl && (
-              <Image src={user.photoUrl} alt={user.displayName} className="w-10 h-10 rounded-full" />
-            )}
+            <Image src={user.photoURL} alt={user.displayName} className="rounded-full" width={40} height={40} />
             <span>{user.displayName}</span>
             <button
               type="button"
