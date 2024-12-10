@@ -6,29 +6,31 @@ import { useGame } from '../../_contexts/game-context';
 export default function Timer() {
   const Ref = useRef(null);
 
-  const { remainingTime, setRemainingTime, setIsTimerStopped } = useGame();
+  const { remainingTime, setRemainingTime, setIsTimerStopped, isTimerStopped } = useGame();
 
   useEffect(() => {
-    const startTimer = () => {
-      const id = setInterval(() => {
-        setRemainingTime((prevTime) => {
-          if (prevTime <= 1) {
-            clearInterval(id);
-            setIsTimerStopped(true);
-            return 0;
-          }
-          return prevTime - 1;
-        });
-      }, 1000);
-      Ref.current = id;
-    };
+    if (!isTimerStopped) {
+      const startTimer = () => {
+        const id = setInterval(() => {
+          setRemainingTime((prevTime) => {
+            if (prevTime <= 1) {
+              clearInterval(id);
+              setIsTimerStopped(true);
+              return 0;
+            }
+            return prevTime - 1;
+          });
+        }, 1000);
+        Ref.current = id;
+      };
 
-    startTimer();
+      startTimer();
 
-    return () => {
-      clearInterval(Ref.current);
-    };
-  }, [setIsTimerStopped, setRemainingTime]);
+      return () => {
+        clearInterval(Ref.current);
+      };
+    }
+  }, [isTimerStopped, setIsTimerStopped, setRemainingTime]);
 
   return (
     <div className="text-center m-auto mt-4">

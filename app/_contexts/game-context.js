@@ -1,21 +1,21 @@
 'use client';
 
 import {
-  createContext, useCallback, useContext, useEffect, useMemo, useState,
+  useContext, createContext, useState, useEffect, useMemo,
+  useCallback,
 } from 'react';
+import {
+  signInWithPopup,
+  signOut,
+  onAuthStateChanged,
+  GoogleAuthProvider,
+} from 'firebase/auth';
+import auth from '../_utils/firebase';
 
 const GameContext = createContext();
 
 export function GameContextProvider({ children }) {
-  const [questions, setQuestions] = useState([
-    {
-      category: '',
-      question: '',
-      incorrect_answers: [''],
-      correct_answer: '',
-      difficulty: 'easy',
-    },
-  ]);
+  const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [remainingTime, setRemainingTime] = useState(30);
@@ -23,31 +23,31 @@ export function GameContextProvider({ children }) {
 
   const difficultyPoints = useMemo(() => ({ easy: 1, medium: 2, hard: 3 }), []);
 
-  const getQuestions = () => {
+  const getQuestions = async () => {
     const token = localStorage.getItem('token');
     const url = `https://opentdb.com/api.php?amount=10&token=${token}`;
     try {
-      fetch(url)
-        .then((response) => response.json())
-        .then(({ response_code: responseCode, results }) => {
-          if (responseCode === 0) {
-            setQuestions(results);
-          }
-        });
+      const response = await fetch(url);
+      const data = await response.json();
+      if (data.response_code === 0) {
+        setQuestions(data.results);
+      } else {
+        console.error('Failed to fetch questions');
+      }
     } catch (e) {
-      console.error(e);
+      console.error('Error fetching questions:', e);
     }
   };
 
   const updateScore = useCallback(() => {
     const BASE_POINTS = 10;
-    const difficulty = difficultyPoints[questions[currentQuestionIndex].difficulty];
+    const difficulty = difficultyPoints[questions[currentQuestionIndex]?.difficulty] || 1;
     const points = BASE_POINTS + remainingTime * difficulty;
     setScore((prevScore) => prevScore + points);
   }, [currentQuestionIndex, difficultyPoints, questions, remainingTime]);
 
   const handleNextButtonClick = () => {
-    setCurrentQuestionIndex((prevIndex) => (prevIndex < 10 ? prevIndex + 1 : prevIndex));
+    setCurrentQuestionIndex((prevIndex) => (prevIndex < questions.length - 1 ? prevIndex + 1 : prevIndex));
     setRemainingTime(30);
     setIsTimerStopped(false);
   };
@@ -58,19 +58,18 @@ export function GameContextProvider({ children }) {
   }, []);
 
   const value = useMemo(
-    () => (
-      {
-        questions,
-        currentQuestionIndex,
-        score,
-        remainingTime,
-        setRemainingTime,
-        isTimerStopped,
-        setIsTimerStopped,
-        updateScore,
-        handleNextButtonClick,
-      }),
-    [currentQuestionIndex, isTimerStopped, questions, remainingTime, score, updateScore],
+    () => ({
+      questions,
+      currentQuestionIndex,
+      score,
+      remainingTime,
+      setRemainingTime,
+      isTimerStopped,
+      setIsTimerStopped,
+      updateScore,
+      handleNextButtonClick,
+    }),
+    [questions, currentQuestionIndex, score, remainingTime, isTimerStopped, updateScore]
   );
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;

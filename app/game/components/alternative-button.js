@@ -8,21 +8,22 @@ export default function AlternativeButton({ isCorrect, text, index }) {
 
   const handleAlternativeClick = () => {
     setIsTimerStopped(true);
+    setRemainingTime(0);
     if (isCorrect) {
       updateScore();
     }
   };
 
   useEffect(() => {
-    if (isTimerStopped) {
+    if (isTimerStopped && remainingTime === 0) {
       const timer = setTimeout(() => {
         handleNextButtonClick();
         setRemainingTime(30);
         setIsTimerStopped(false);
-      }, 30000);
+      }, 5000); // Stay for 5 seconds before moving to the next question
       return () => clearTimeout(timer);
     }
-  }, [isTimerStopped, handleNextButtonClick, setRemainingTime, setIsTimerStopped]);
+  }, [isTimerStopped, remainingTime, handleNextButtonClick, setRemainingTime, setIsTimerStopped]);
 
   return (
     <button
