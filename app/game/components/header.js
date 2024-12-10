@@ -16,7 +16,9 @@ export default function Header() {
       <div className="flex items-center space-x-4">
         {user && (
           <>
-            <img src={user.photoUrl} alt={user.displayName} className="w-10 h-10 rounded-full" />
+            {user.photoUrl && (
+              <img src={user.photoUrl} alt={user.displayName} className="w-10 h-10 rounded-full" />
+            )}
             <span>{user.displayName}</span>
             <button
               className="bg-red-500 px-4 py-2 rounded hover:bg-red-700"
