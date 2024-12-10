@@ -27,7 +27,9 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <UserContextProvider>
-          <GameContextProvider>{children}</GameContextProvider>
+          <GameContextProvider>
+            {children}
+          </GameContextProvider>
         </UserContextProvider>
       </body>
     </html>
