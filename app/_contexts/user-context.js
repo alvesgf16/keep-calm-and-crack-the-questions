@@ -63,7 +63,7 @@ export function UserContextProvider({ children }) {
     }
 
     return () => unsubscribe();
-  }, []);
+  }, [user]);
 
   const value = useMemo(() => ({ user, googleSignIn, firebaseSignOut }), [googleSignIn, user]);
 
