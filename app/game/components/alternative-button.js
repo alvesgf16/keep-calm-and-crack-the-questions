@@ -1,9 +1,10 @@
 'use client';
 
 import { useGame } from '../../_contexts/game-context';
+import { useEffect } from 'react';
 
-export default function AlternativeButton({ isCorrect, text }) {
-  const { isTimerStopped, setIsTimerStopped, updateScore } = useGame();
+export default function AlternativeButton({ isCorrect, text, index }) {
+  const { isTimerStopped, setIsTimerStopped, updateScore, handleNextButtonClick, remainingTime, setRemainingTime } = useGame();
 
   const handleAlternativeClick = () => {
     setIsTimerStopped(true);
@@ -12,19 +13,29 @@ export default function AlternativeButton({ isCorrect, text }) {
     }
   };
 
+  useEffect(() => {
+    if (isTimerStopped) {
+      const timer = setTimeout(() => {
+        handleNextButtonClick();
+        setRemainingTime(30);
+        setIsTimerStopped(false);
+      }, 30000);
+      return () => clearTimeout(timer);
+    }
+  }, [isTimerStopped, handleNextButtonClick, setRemainingTime, setIsTimerStopped]);
+
   return (
     <button
-      style={{
-        border:
-          isTimerStopped
-          && (isCorrect
-            ? '3px solid rgb(6, 240, 15)'
-            : '3px solid rgb(255, 0, 0)'),
-      }}
+      className={`p-4 w-full text-left rounded-lg ${
+        isTimerStopped
+          ? isCorrect
+            ? 'bg-blue-500 text-white'
+            : 'bg-red-500 text-white'
+          : 'bg-gray-300 text-black'
+      }`}
       type="button"
       onClick={handleAlternativeClick}
       disabled={isTimerStopped}
-      className="text-black"
     >
       {text}
     </button>

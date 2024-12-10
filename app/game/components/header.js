@@ -1,31 +1,32 @@
 'use client';
 
-import Image from 'next/image';
-import { useGame } from '../../_contexts/game-context';
 import { useUserAuth } from '../../_contexts/user-context';
+import { useGame } from '../../_contexts/game-context';
 
 export default function Header() {
   const { user, firebaseSignOut } = useUserAuth();
   const { score } = useGame();
 
   return (
-    <header>
-      <h1>
-        {user.photoUrl && <Image src={user.photoUrl} alt="User" />}
-        <p className="text-xl text-black font-medium">
-          Welcome,
-          {' '}
-          {user.displayName}
-        </p>
-      </h1>
-      <h4 className="text-black">{score}</h4>
-      <button
-        type="button"
-        onClick={async () => firebaseSignOut()}
-        className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-700"
-      >
-        Logout
-      </button>
+    <header className="w-full bg-blue-500 text-white p-4 flex justify-between items-center">
+      <div>
+        <h1 className="text-2xl font-bold">Trivia Game</h1>
+        <p>Score: {score}</p>
+      </div>
+      <div className="flex items-center space-x-4">
+        {user && (
+          <>
+            <img src={user.photoUrl} alt={user.displayName} className="w-10 h-10 rounded-full" />
+            <span>{user.displayName}</span>
+            <button
+              className="bg-red-500 px-4 py-2 rounded hover:bg-red-700"
+              onClick={firebaseSignOut}
+            >
+              Sign Out
+            </button>
+          </>
+        )}
+      </div>
     </header>
   );
 }
