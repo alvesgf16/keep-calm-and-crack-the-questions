@@ -1,10 +1,14 @@
 'use client';
 
 import { useGame } from '../../_contexts/game-context';
-import { useEffect } from 'react';
 
-export default function AlternativeButton({ isCorrect, text, index }) {
-  const { isTimerStopped, setIsTimerStopped, updateScore, handleNextButtonClick, remainingTime, setRemainingTime } = useGame();
+export default function AlternativeButton({ isCorrect, text }) {
+  const {
+    isTimerStopped,
+    setIsTimerStopped,
+    updateScore,
+    setRemainingTime,
+  } = useGame();
 
   const handleAlternativeClick = () => {
     setIsTimerStopped(true);
@@ -14,26 +18,21 @@ export default function AlternativeButton({ isCorrect, text, index }) {
     }
   };
 
-  useEffect(() => {
-    if (isTimerStopped && remainingTime === 0) {
-      const timer = setTimeout(() => {
-        handleNextButtonClick();
-        setRemainingTime(30);
-        setIsTimerStopped(false);
-      }, 5000); // Stay for 5 seconds before moving to the next question
-      return () => clearTimeout(timer);
+  const getButtonColors = () => {
+    if (isTimerStopped) {
+      if (isCorrect) {
+        return 'bg-blue-500 text-white';
+      }
+
+      return 'bg-red-500 text-white';
     }
-  }, [isTimerStopped, remainingTime, handleNextButtonClick, setRemainingTime, setIsTimerStopped]);
+
+    return 'bg-gray-300 text-black';
+  };
 
   return (
     <button
-      className={`p-4 w-full text-left rounded-lg ${
-        isTimerStopped
-          ? isCorrect
-            ? 'bg-blue-500 text-white'
-            : 'bg-red-500 text-white'
-          : 'bg-gray-300 text-black'
-      }`}
+      className={`p-4 w-full text-left rounded-lg ${getButtonColors()}`}
       type="button"
       onClick={handleAlternativeClick}
       disabled={isTimerStopped}

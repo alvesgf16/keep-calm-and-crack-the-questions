@@ -6,7 +6,9 @@ import { useGame } from '../../_contexts/game-context';
 export default function Timer() {
   const Ref = useRef(null);
 
-  const { remainingTime, setRemainingTime, setIsTimerStopped, isTimerStopped } = useGame();
+  const {
+    remainingTime, setRemainingTime, setIsTimerStopped, isTimerStopped,
+  } = useGame();
 
   useEffect(() => {
     if (!isTimerStopped) {
@@ -30,12 +32,15 @@ export default function Timer() {
         clearInterval(Ref.current);
       };
     }
+    return undefined;
   }, [isTimerStopped, setIsTimerStopped, setRemainingTime]);
 
   return (
     <div className="text-center m-auto mt-4">
       <h2 className="text-xl font-bold">
-        Remaining time: {remainingTime}
+        Remaining time:
+        {' '}
+        {remainingTime}
       </h2>
     </div>
   );
