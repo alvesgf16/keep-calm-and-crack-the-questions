@@ -57,7 +57,7 @@ export function GameContextProvider({ children }) {
       if (data.response_code === 0) {
         setQuestions(data.results.map(formatResult));
       } else {
-        console.error('Failed to fetch questions');
+        console.error(`Failed to fetch questions. Response code was ${data.response_code}.`);
       }
     } catch (e) {
       console.error('Error fetching questions:', e);
