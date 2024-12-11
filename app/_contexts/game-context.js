@@ -49,7 +49,7 @@ export function GameContextProvider({ children }) {
 
   const getQuestions = useCallback(async () => {
     const token = localStorage.getItem('token');
-    const url = `https://opentdb.com/api.php?amount=3&token=${token}`;
+    const url = `https://opentdb.com/api.php?amount=10&token=${token}`;
     try {
       const response = await fetch(url);
       const data = await response.json();
