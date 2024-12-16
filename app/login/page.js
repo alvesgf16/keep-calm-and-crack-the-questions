@@ -1,13 +1,18 @@
 'use client';
 
 import Image from 'next/image';
+import { redirect } from 'next/navigation';
 import { useUserAuth } from '../_contexts/user-context';
 import googleLogo from '../../public/google.png';
 
 // Import the useUserAuth hook
 
 export default function Login() {
-  const { googleSignIn, isSigningIn } = useUserAuth();
+  const { user, googleSignIn, isSigningIn } = useUserAuth();
+
+  if (user) {
+    redirect('/game');
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-cover bg-center">
